@@ -12,7 +12,8 @@ int main(){
     print_vector(y);
     print_vector(merge_sorted(x, y));
     std::vector<int> sorted = dac_sort(z);
-
+    std::cout << "sorted vector" << std::endl;
+    print_vector(sorted);
     // printing queue
 
 }

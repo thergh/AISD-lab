@@ -131,7 +131,11 @@ std::vector<int> dac_sort(std::vector<int> a){
     }
 
     while(queue.size() > 1){
-        std::vector<int> x = queue.pop_back
+        std::vector<int> x = queue[queue.size() - 1];
+        queue.pop_back();
+        std::vector<int> y = queue[queue.size() - 1];
+        queue.pop_back();
+        queue.push_back(merge_sorted(x, y));
     }
 
     return queue[0];
