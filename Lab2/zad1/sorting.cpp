@@ -2,9 +2,7 @@
 #include <iostream>
 #include <random>
 #include <algorithm>
-
-
-// global verboses for recursive functions so i don't have to deal with returning
+#include <tuple>
 
 
 void print_vector(std::vector<int> v){
@@ -18,7 +16,7 @@ void print_vector(std::vector<int> v){
 }
 
 
-std::vector<int> random(int size){
+std::vector<int> random_v(int size){
     std::vector<int> arr;
     std::random_device dev;
     std::mt19937 rng(dev());
@@ -33,20 +31,21 @@ std::vector<int> random(int size){
 
 
 std::vector<int> random_asc(int size){
-    std::vector arr = random(size);
+    std::vector arr = random_v(size);
     std::sort(arr.begin(), arr.end());
     return arr;
 }
 
 
 std::vector<int> random_desc(int size){
-    std::vector arr = random(size);
+    std::vector arr = random_v(size);
     std::sort(arr.begin(), arr.end(), std::greater<>());
     return arr;
 }
 
 
-std::vector<int> insert_sort(std::vector<int> v, bool verbose){
+std::tuple<std::vector<int>, int, int, double, double>\
+ insert_sort(std::vector<int> v, bool verbose){
     int value = 0;
     int j = 0;
     int size = v.size();
@@ -68,12 +67,14 @@ std::vector<int> insert_sort(std::vector<int> v, bool verbose){
         swaps += 1;
     }
 
+    int n = v.size();
+    double cn = (double)comps / n;
+    double sn = (double)swaps / n;
+
     if(verbose){
-        std::cout << comps << " " << swaps << " " <<\
-         (double)comps / (double)v.size() <<\
-          " " << (double)swaps / (double)v.size() << std::endl;
+        std::cout << comps << " " << swaps << " " << cn << " " << sn << std::endl;
     }
-    return v;
+    return std::make_tuple(v, comps, swaps, cn, sn);
 }
 
 
@@ -125,7 +126,7 @@ std::vector<int> quick_sort(std::vector<int> v, bool verbose){
 
 void quick_hybrid(std::vector<int> &v, int low, int high, int &comps, int &swaps){
     if(high - low < 5){
-        v = insert_sort(v, false);
+        v = std::get<0>(insert_sort(v, false));
     }
 
     comps += 1;
