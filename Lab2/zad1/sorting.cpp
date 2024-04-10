@@ -44,8 +44,9 @@ std::vector<int> random_desc(int size){
 }
 
 
-std::tuple<std::vector<int>, int, int, double, double>\
- insert_sort(std::vector<int> v, bool verbose){
+std::tuple<std::vector<int>, int, int, double, double>
+    insert_sort(std::vector<int> v, bool verbose){
+
     int value = 0;
     int j = 0;
     int size = v.size();
@@ -68,6 +69,41 @@ std::tuple<std::vector<int>, int, int, double, double>\
     }
 
     int n = v.size();
+    double cn = (double)comps / n;
+    double sn = (double)swaps / n;
+
+    if(verbose){
+        std::cout << comps << " " << swaps << " " << cn << " " << sn << std::endl;
+    }
+    return std::make_tuple(v, comps, swaps, cn, sn);
+}
+
+
+std::tuple<std::vector<int>, int, int, double, double>
+    insert_hybrid_sort(std::vector<int> &v, int low, int high, bool verbose){
+
+    int value = 0;
+    int j = 0;
+    int size = v.size();
+
+    int comps = 0;
+    int swaps = 0;
+
+    for(int i = low; i < high; i++){
+        value = v[i];
+        j = i - 1;
+
+        while(j >= 0 && v[j] > value){
+            comps += 1;
+            v[j + 1] = v[j];
+            swaps += 1;
+            j = j - 1;
+        }
+        v[j + 1] = value;
+        swaps += 1;
+    }
+
+    int n = high - low;
     double cn = (double)comps / n;
     double sn = (double)swaps / n;
 
@@ -106,53 +142,58 @@ void quick_(std::vector<int> &v, int low, int high, int &comps, int &swaps){
 }
 
 
-std::vector<int> quick_sort(std::vector<int> v, bool verbose){
+std::tuple<std::vector<int>, int, int, double, double> quick_sort(std::vector<int> v, bool verbose){
     int comps = 0;
     int swaps = 0;
 
     if(v.size() <= 1){
-        return v;
+        return std::make_tuple(v, comps, swaps, 0, 0);
     }
     quick_(v, 0, v.size() - 1, comps, swaps);
 
+    int n = v.size();
+    double cn = (double)comps / n;
+    double sn = (double)swaps / n;
+
     if(verbose){
-        std::cout << comps << " " << swaps << " " <<\
-         (double)comps / (double)v.size() <<\
-          " " << (double)swaps / (double)v.size() << std::endl;
+        std::cout << comps << " " << swaps << " " << cn << " " << sn << std::endl;
     }
-    return v;
+    return std::make_tuple(v, comps, swaps, cn, sn);
 }
 
 
 void quick_hybrid(std::vector<int> &v, int low, int high, int &comps, int &swaps){
-    if(high - low < 5){
-        v = std::get<0>(insert_sort(v, false));
-    }
-
-    comps += 1;
     if(low < high){
-        int pi = partition(v, low, high, comps, swaps);
-        quick_hybrid(v, low, pi-1, comps, swaps);
-        quick_hybrid(v, pi+1, high, comps, swaps);
+        if(high - low < 5){
+            v = std::get<0>(insert_hybrid_sort(v, low, high, false));
+        }
+        else{
+            int pi = partition(v, low, high, comps, swaps);
+            quick_hybrid(v, low, pi-1, comps, swaps);
+            quick_hybrid(v, pi+1, high, comps, swaps);
+        }
     }
+        comps += 1;
 }
 
 
-std::vector<int> quick_hybrid_sort(std::vector<int> v, bool verbose){
+std::tuple<std::vector<int>, int, int, double, double> quick_hybrid_sort(std::vector<int> v, bool verbose){
     int comps = 0;
     int swaps = 0;
 
     if(v.size() <= 1){
-        return v;
+        return std::make_tuple(v, comps, swaps, 0, 0); 
     }
     quick_hybrid(v, 0, v.size() - 1, comps, swaps);
 
+    int n = v.size();
+    double cn = (double)comps / n;
+    double sn = (double)swaps / n;
+
     if(verbose){
-        std::cout << comps << " " << swaps << " " <<\
-         (double)comps / (double)v.size() <<\
-          " " << (double)swaps / (double)v.size() << std::endl;
+        std::cout << comps << " " << swaps << " " << cn << " " << sn << std::endl;
     }
-    return v;    
+    return std::make_tuple(v, comps, swaps, cn, sn); 
 }
 
 
@@ -163,27 +204,27 @@ std::vector<int> merge_sorted(std::vector<int> a, std::vector<int> b){
 }
 
 
-std::vector<int> dac_sort(std::vector<int> a, bool verbose){
-    if(a.size() <= 1){
-        return a;
+std::tuple<std::vector<int>, int, int, double, double> dac_sort(std::vector<int> v, bool verbose){
+    if(v.size() <= 1){
+        return std::make_tuple(v, 0, 0, 0, 0); 
     }
 
     int comps = 0;
     int swaps = 0;
 
     std::vector<std::vector<int>> queue;
-    int prev = a[0];
+    int prev = v[0];
     std::vector<int> part;
     part.push_back(prev);
 
-    for(int i = 1; i < a.size(); i++){
+    for(int i = 1; i < v.size(); i++){
         comps += 1;
-        if(a[i] >= a[i - 1]){
-            part.push_back(a[i]);
+        if(v[i] >= v[i - 1]){
+            part.push_back(v[i]);
         }
         else{
             queue.push_back(part);
-            part = {a[i]};
+            part = {v[i]};
         }
     }
     
@@ -203,10 +244,10 @@ std::vector<int> dac_sort(std::vector<int> a, bool verbose){
 
     if(verbose){
         std::cout << comps << " " << swaps << " " <<\
-        (double) comps / (double)a.size() <<\
-         " " << (double)swaps / (double)a.size() << std::endl;
+        (double) comps / (double)v.size() <<\
+         " " << (double)swaps / (double)v.size() << std::endl;
     }
-    return queue[0];
+    return std::make_tuple(queue[0], 0, 0, 0, 0);
 }
 
 
@@ -261,16 +302,18 @@ std::vector<int> merge_sort_(std::vector<int> v, int &comps, int &swaps){
 }
 
 
-std::vector<int> merge_sort(std::vector<int> v, bool verbose){
+std::tuple<std::vector<int>, int, int, double, double> merge_sort(std::vector<int> v, bool verbose){
     int comps = 0;
     int swaps = 0;
 
     std::vector<int> result = merge_sort_(v, comps, swaps);
 
+    int n = v.size();
+    double cn = (double)comps / n;
+    double sn = (double)swaps / n;
+
     if(verbose){
-        std::cout << comps << " " << swaps << " " <<\
-         (double)comps / (double)v.size() <<\
-          " " << (double)swaps / (double)v.size() << std::endl;
+        std::cout << comps << " " << swaps << " " << cn << " " << sn << std::endl;
     }
-    return v;
+    return std::make_tuple(v, comps, swaps, cn, sn); 
 }
