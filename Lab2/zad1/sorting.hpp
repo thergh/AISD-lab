@@ -16,6 +16,9 @@ std::tuple<std::vector<int>, int, int, double, double>
 std::tuple<std::vector<int>, int, int, double, double>
     merge_sort(std::vector<int>, bool verbose = false);
 
+std::tuple<std::vector<int>, int, int, double, double>
+    dual_pivot_quick_sort(std::vector<int> v, bool verbose = false);
+
 std::vector<int> random_v(int size);
 
 std::vector<int> random_asc(int size);
