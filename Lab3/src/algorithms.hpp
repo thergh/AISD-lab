@@ -1,8 +1,12 @@
 #pragma once
 #include <vector>
 
-int select_random(std::vector<int> &v, int low, int high, int position);
 
-int select_median(std::vector<int>& v, int position, int k=5);
 
-int binary_search(std::vector<int> v, int key);
+std::tuple<int, int, double> binary_search(const std::vector<int>& v, int target);
+
+std::tuple<int, int, int, double, double> select_random(
+    std::vector<int>& v, int k);
+
+std::tuple<int, int, int, double, double> select_median(
+    std::vector<int>& v, int k, int group_size);

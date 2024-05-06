@@ -2,123 +2,159 @@
 #include <algorithm>
 #include <vector>
 #include <random>
+#include <tuple>
 
 
-int partition(std::vector<int> &v, int low, int high, int pivot){
-    int i = low; 
 
-    for(int j = low; j <= high - 1; j++){ 
-        if(v[j] <= pivot){ 
-            std::swap(v[i], v[j]); 
-            i++; 
-        } 
-    } 
-    std::swap(v[i], v[high]);
+int binary_search_rec(const std::vector<int>& v, int low, int high, int target, int& comps){
+    comps ++;
+    if(low <= high){
+        int mid = low + (high - low) / 2;
 
-    return i; 
-} 
-  
+        if(v[mid] == target){
+            return 1;
 
-int select_random(std::vector<int> &v, int low, int high, int position){
+        }
 
+        if(v[mid] < target){
+            return binary_search_rec(v, mid + 1, high, target, comps);
+
+        }
+
+        return binary_search_rec(v, low, mid - 1, target, comps);
+    }
+
+    return 0;
+}
+
+
+std::tuple<int, int, double> binary_search(const std::vector<int>& v, int target){
+    int n = v.size();
+    int low = 0;
+    int high = v.size() - 1;
+    int comps = 0;
+    int result = binary_search_rec(v, low, high, target, comps);
+    double cn = (double)comps / n;
+    return std::make_tuple(result, comps, cn);
+}
+
+
+int partition(std::vector<int>& v, int low, int high, int pivot_index, int& comps, int& swaps){
+    std::swap(v[pivot_index], v[high]);
+    swaps ++;
+    int pivot = v[high];
+    int i = low - 1;
+    
+    for(int j = low; j < high; j++){
+        comps ++;
+        if(v[j] < pivot){
+            i++;
+            std::swap(v[i], v[j]);
+            swaps ++;
+        }
+    }
+    
+    std::swap(v[i + 1], v[high]);
+    swaps ++;
+    
+    return i + 1;
+}
+
+
+int select_random_rec(std::vector<int>& v, int low, int high, int position, int& comps, int& swaps){
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distribution(low, high);
 
-    if(position > 0 && position <= high - low + 1){ 
-        int index = partition(v, low , high, v[distribution(gen)]); 
-  
-        if(index - low == position - 1){
-            return v[index]; 
+    comps ++;
+    if(low <= high){
+        int partition_index = partition(v, low, high, distribution(gen), swaps, comps);
+        
+        comps ++;
+        if(partition_index == position){
+            return v[position];
         }
-  
-        if(index - low  > position - 1){
-            return select_random(v, low, index - 1, position); 
-        }
-  
-        return select_random(v, index + 1, high, position - index + low - 1); 
-    } 
-  
-    return INT_MAX; 
-}
-
-
-int median5(std::vector<int>& v){
-    sort(v.begin(), v.end());
-    return v[v.size() / 2];
-}
-
-
-int partition_median(std::vector<int>& v, int low, int high, int pivot){
-    while(low <= high){
-        while(v[low] < pivot){
-            low++;
-        }
-        while(v[high] > pivot){
-            high--;
-        }
-        if(low <= high){
-            std::swap(v[low], v[high]);
-            low++;
-            high--;
-        }
-    }
-    return low;
-}
-
-
-int select_median(std::vector<int>& v, int position, int k=5){
-    const int n = v.size();
-    std::vector<int> medians;
-
-    for(int i = 0; i < n; i += k){
-        std::vector<int> group;
-        for(int j = i; j < std::min(i + k, n); ++j){
-            group.push_back(v[j]);
-        }
-        medians.push_back(median5(group));
-    }
-
-    int pivot;
-    if(medians.size() == 1){
-        pivot = medians[0];
-    }   
-    else{
-        pivot = select_median(medians, medians.size() / 2, k);
-    }
-
-    int index = partition_median(v, 0, n - 1, pivot);
-
-    if(index == position){
-        return v[index];
-    }
-    else if(index > position){
-        return select_median(v, position, k);
-    }
-    else{
-        return select_median(v, position - index, k);
-    }
-}
-
-
-int binary_search(std::vector<int> v, int key){
-    int low = 0;
-    int high = v.size() - 1;
-    int mid = -1;
-
-    while(low <= high){
-        mid = low + (high - low) / 2;
-
-        if(v[mid] == key){
-            // return mid;
-            return 1;
-        }
-        else if(v[mid] < key){
-            low = mid + 1;
+        else if(partition_index > position){
+            comps ++;
+            return select_random_rec(v, low, partition_index - 1, position, swaps, comps);
         }
         else{
-            high = mid - 1;
+            comps ++;
+            return select_random_rec(v, partition_index + 1, high, position, swaps, comps);
         }
     }
     return -1;
+}
+
+
+std::tuple<int, int, int, double, double> select_random(
+    std::vector<int>& v, int k){
+    int comps = 0;
+    int swaps = 0;
+    int n = v.size();
+    int result = select_random_rec(v, 0, v.size() - 1, k, comps, swaps);
+    double cn = comps / n;
+    double sn = swaps / n;
+    return std::make_tuple(result, comps, swaps, cn, sn);
+}
+
+
+int median_of_medians(std::vector<int>& v, int low, int high, int group_size, int& comps, int& swaps){
+    int n = high - low + 1;
+    if(n <= group_size){
+        comps ++;
+        std::sort(v.begin() + low, v.begin() + high + 1);
+        swaps += 2;
+        comps += 2;
+        return low + n / 2;
+    }
+
+    std::vector<int> medians;
+    for(int i = low; i <= high; i += group_size){
+        int sub_high = std::min(i + group_size - 1, high);
+        comps ++;
+        int median_index = median_of_medians(v, i, sub_high, group_size, comps, swaps);
+        medians.push_back(v[median_index]);
+    }
+
+    return median_of_medians(medians, 0, medians.size() - 1, group_size, comps, swaps);
+}
+
+
+int select_median_rec(std::vector<int>& v, int low, int high, int k, int group_size,
+    int& comps, int& swaps){
+
+    int pivot_index = median_of_medians(v, low, high, group_size, comps, swaps);
+
+    comps ++;
+    if(low <= high){
+        int partition_index = partition(v, low, high, pivot_index, comps, swaps);
+        
+        comps ++;
+        if(partition_index == k){
+            
+            return v[k];
+        }
+        else if(partition_index > k){
+            comps ++;
+            return select_median_rec(v, low, partition_index - 1, k, group_size, comps, swaps);
+        }
+        else{
+            comps ++;
+            return select_median_rec(v, partition_index + 1, high, k, group_size, comps, swaps);
+        }
+    }
+    return -1;
+}
+
+
+std::tuple<int, int, int, double, double> select_median(
+    std::vector<int>& v, int k, int group_size){
+    int comps = 0;
+    int swaps = 0;
+    int n = v.size();
+    int result = select_median_rec(v, 0, v.size() - 1, k, group_size, comps, swaps);
+    double cn = comps / n;
+    double sn = swaps / n;
+    return std::make_tuple(result, comps, swaps, cn, sn);
 }
