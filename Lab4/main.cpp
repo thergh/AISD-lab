@@ -1,6 +1,28 @@
 #include "trees.h"
 #include <iostream>
+
+
 int main(){
+    BST* bst_tree = new BST();
+    bst_tree->insert_value(15);
+    bst_tree->insert_value(10);
+	bst_tree->insert_value(17);
+    bst_tree->insert_value(7);
+    bst_tree->insert_value(16);
+    bst_tree->insert_value(30);
+    bst_tree->insert_value(25);
+    bst_tree->insert_value(40);
+    bst_tree->insert_value(60);
+    print_tree(bst_tree->root);
+    std::cout << "comps: " << bst_tree->comps_count << std::endl;
+    std::cout << "ptr: " << bst_tree->ptr_operations_count << std::endl;
+
+    
+    bst_tree->delete_value(2121235);
+    print_tree(bst_tree->root);
+    std::cout << "comps: " << bst_tree->comps_count << std::endl;
+    std::cout << "ptr: " << bst_tree->ptr_operations_count << std::endl;
+
     // RBT* rbt_tree = new RBT();
     // rbt_tree->insert_value(10);
     // rbt_tree->insert_value(18);
@@ -12,35 +34,28 @@ int main(){
     // rbt_tree->insert_value(40);
     // rbt_tree->insert_value(60);
     // print_tree(rbt_tree->root);
+    // std::cout << "comps: " << rbt_tree->comps_count << std::endl;
+    // std::cout << "ptr: " << rbt_tree->ptr_operations_count << std::endl;
 
-    // std::cout << "delete 16\n";
-    // rbt_tree->delete_value(16);
+    // rbt_tree->delete_value(10);
+    // rbt_tree->delete_value(18);
     // print_tree(rbt_tree->root);
+    // std::cout << "comps: " << rbt_tree->comps_count << std::endl;
+    // std::cout << "ptr: " << rbt_tree->ptr_operations_count << std::endl;
 
-    ST* splay_tree = new ST();
-    splay_tree->insert_value(15);
-    splay_tree->insert_value(10);
-	splay_tree->insert_value(17);
-    splay_tree->insert_value(7);
+
+    // ST* splay_tree = new ST();
+    // splay_tree->insert_value(15);
+    // splay_tree->insert_value(10);
+	// splay_tree->insert_value(17);
+    // splay_tree->insert_value(7);
     // splay_tree->insert_value(16);
     // splay_tree->insert_value(30);
     // splay_tree->insert_value(25);
     // splay_tree->insert_value(40);
     // splay_tree->insert_value(60);
-    print_tree(splay_tree->root);
-    // std::cout << splay_tree->root->value << std::endl;
-
-    // std::cout << "delete 16\n";
-    splay_tree->delete_value(15);
-    splay_tree->delete_value(10);
-    // splay_tree->delete_value(17);
-    // splay_tree->delete_value(7);
-    print_tree(splay_tree->root);
-
-    // splay_tree->insert_value(15);
-    // splay_tree->insert_value(10);
-	// splay_tree->insert_value(17);
-    // splay_tree->insert_value(7);
     // print_tree(splay_tree->root);
-	return 0;
+    // std::cout << "comps: " << splay_tree->comps_count << std::endl;
+    // std::cout << "ptr: " << splay_tree->ptr_operations_count << std::endl;
+
 }

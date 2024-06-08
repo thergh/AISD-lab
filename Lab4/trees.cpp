@@ -69,14 +69,15 @@ void BST::insert_value(int value){
 
 
 Node* BST::min_value_node(Node* node){
-    Node* current = node;
-    while(current && current->left != nullptr){
-        current = current->left;
-        this->comps_count++;
+        Node* current = node;
         this->ptr_operations_count ++;
+        while(current && current->left != nullptr){
+            current = current->left;
+            this->comps_count ++;
+            this->ptr_operations_count ++;
+        }
+        return current;
     }
-    return current;
-}
 
 
 Node* BST::delete_value_rec(Node* root, int value){
@@ -121,7 +122,7 @@ Node* BST::delete_value_rec(Node* root, int value){
         root->value = temp->value;
         root->right = delete_value_rec(root->right, temp->value);
 
-        this->ptr_operations_count += 3;
+        this->ptr_operations_count += 2;
     }
 
     return root;
@@ -129,7 +130,7 @@ Node* BST::delete_value_rec(Node* root, int value){
 
 
 void BST::delete_value(int value){
-    delete_value_rec(this->root, value);
+    this->root = delete_value_rec(this->root, value);
 }
 
 
@@ -347,9 +348,11 @@ void RBT::insert_value(int value){
 
 
 Node* RBT::delete_value_rec(Node* node, int value){
-    if(node == nullptr)
-    this->comps_count ++;
+    if(node == nullptr){
+        this->comps_count ++;
         return node;
+    }
+    
 
     if(value < node->value){
         node->left = delete_value_rec(node->left, value);
@@ -409,7 +412,7 @@ Node* RBT::delete_value_rec(Node* node, int value){
 
 
 void RBT::delete_value(int value){
-    delete_value_rec(this->root, value);
+    this->root = delete_value_rec(this->root, value);
 }
 
 
