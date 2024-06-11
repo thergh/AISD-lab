@@ -3,7 +3,7 @@
 
 
 int main(){
-    BST* bst_tree = new BST();
+    ST* bst_tree = new ST();
     bst_tree->insert_value(15);
     bst_tree->insert_value(10);
 	bst_tree->insert_value(17);
@@ -16,12 +16,14 @@ int main(){
     print_tree(bst_tree->root);
     std::cout << "comps: " << bst_tree->comps_count << std::endl;
     std::cout << "ptr: " << bst_tree->ptr_operations_count << std::endl;
-
     
+    std::cout << "height: " << bst_tree->height() << std::endl;
+
     bst_tree->delete_value(2121235);
     print_tree(bst_tree->root);
     std::cout << "comps: " << bst_tree->comps_count << std::endl;
     std::cout << "ptr: " << bst_tree->ptr_operations_count << std::endl;
+    std::cout << "height: " << bst_tree->height() << std::endl;
 
     // RBT* rbt_tree = new RBT();
     // rbt_tree->insert_value(10);

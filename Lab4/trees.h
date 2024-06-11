@@ -30,8 +30,8 @@ void print_tree(Node* root);
 class BST{
 public:
     Node* root;
-    int comps_count = 0;
-    int ptr_operations_count = 0;
+    long long comps_count = 0;
+    long long ptr_operations_count = 0;
 
     BST();
     void insert_value(int value);
@@ -52,8 +52,8 @@ private:
 class RBT{
 public:
     Node* root;
-    int comps_count;
-    int ptr_operations_count;
+    long long  comps_count;
+    long long  ptr_operations_count;
     
     RBT();
     void insert_value(int value);
@@ -76,8 +76,8 @@ private:
 class ST{
 public:
     Node* root;
-    int comps_count;
-    int ptr_operations_count;
+    long long  comps_count;
+    long long  ptr_operations_count;
     
     ST();
     void insert_value(int value);
